@@ -30,7 +30,7 @@ resource "aws_s3_bucket_acl" "Rule3" {
   acl        = "public-read"
 }
 
-# making bucket policy for the bucket that's how able to seee the wesite perfectly 
+# making bucket policy for the bucket that's how able to see the wesite perfectly 
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = aws_s3_bucket.Static-Bucket.id
@@ -44,7 +44,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
           "Effect" : "Allow",
           "Principal" : "*",
           "Action" : "s3:GetObject",
-          "Resource" : "arn:aws:s3:::CDN-Web-Pro/*"
+          "Resource" : "arn:aws:s3:::cdn-web-pro-23/*"
         }
       ]
     }
@@ -53,7 +53,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 }
 #uploading the files into the bucket 
 resource "aws_s3_object" "file" {
-  for_each     = fileset(path.module, "Nerflix-website-main/**/*.{html,css,js}")
+  for_each     = fileset(path.module, "Nerflix-website-main/**/*.{html,css,js,png,jpg,mp4}")
   bucket       = aws_s3_bucket.Static-Bucket.id
   key          = replace(each.value, "/^Nerflix-website-main//", "")
   source       = each.value
@@ -107,7 +107,6 @@ resource "aws_cloudfront_distribution" "distribution" {
   restrictions {
     geo_restriction {
       restriction_type = "none"
-      locations        = []
     }
   }
 
@@ -123,10 +122,12 @@ resource "aws_cloudfront_distribution" "distribution" {
 
 }
 
+
 output "website_url" {
   description = "Website URL (HTTPS)"
   value       = aws_cloudfront_distribution.distribution.domain_name
 }
+
 
 output "s3_url" {
   description = "S3 hosting URL (HTTP)"
